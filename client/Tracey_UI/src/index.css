@@ -1,0 +1,29 @@
+
+textarea.form-control {
+  background-color: #1f2937;
+  color: #10b981;
+  border: 1px solid #374151;
+}
+
+.btn-debug {
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+.btn-debug:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-translate {
+  background-color: #8b5cf6;
+  color: white;
+  font-weight: bold;
+}
+.btn-translate:hover {
+  background-color: #7c3aed;
+}
+body {
+  background-color: #121212;
+  color: #f8f9fa;
+  font-family: 'Fira Code', monospace;
+}
