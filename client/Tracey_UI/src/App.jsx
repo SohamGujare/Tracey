@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Header from './components/Header';
 import LanguageSelection from './components/LanguageSelection';
 import CodeEditorPanel from './components/CodeEditorPanel';
@@ -10,48 +11,20 @@ import mermaid from 'mermaid';
 
 function App() {
   const [notification, setNotification] = useState(null);
-  const [debugResults, setDebugResults] = useState([
-    {
-      id: 1,
-      type: 'critical',
-      title: 'Syntax Error',
-      line: 'Line 11',
-      description: 'Missing closing parenthesis in print statement',
-      fix: 'print("Average:", calculate_average(data))',
-      explanation: 'Python requires parentheses for function calls. The print statement is missing its closing parenthesis. This is a common mistake when transitioning from Python 2 to Python 3, where print became a function.'
-    },
-    {
-      id: 2,
-      type: 'warning',
-      title: 'Code Style',
-      line: 'Line 1',
-      description: 'Function name could be more descriptive',
-      fix: 'def calculate_mean(numbers):',
-      explanation: 'While \'calculate_average\' is acceptable, \'calculate_mean\' is more precise for this mathematical operation. Using precise terminology improves code readability and maintainability.'
-    },
-    {
-      id: 3,
-      type: 'suggestion',
-      title: 'Optimization',
-      line: 'Line 7',
-      description: 'Use built-in functions for better performance',
-      fix: 'return sum(numbers) / len(numbers) if numbers else 0',
-      explanation: 'Python\'s built-in sum() function is more efficient and readable than manually iterating through the list. This reduces code complexity and improves performance for large datasets.'
-    }
-  ]);
+  const [debugResults, setDebugResults] = useState([]);
 
-  const [code, setCode] = useState(`def <span class="syntax-function">calculate_average</span>(<span class="syntax-variable">numbers</span>):
-    <span class="syntax-keyword">if</span> <span class="syntax-function">len</span>(<span class="syntax-variable">numbers</span>) == 0:
-        <span class="syntax-keyword">return</span> 0
+  const [code, setCode] = useState(`def calculate_average(numbers):
+    if len(numbers) == 0:
+        return 0
     total = 0
-    <span class="syntax-keyword">for</span> <span class="syntax-variable">num</span> <span class="syntax-keyword">in</span> <span class="syntax-variable">numbers</span>:
+    for num in numbers:
         total += num
-    average = total / <span class="syntax-function">len</span>(<span class="syntax-variable">numbers</span>)
-    <span class="syntax-keyword">return</span> average
+    average = total / len(numbers)
+    return average
 
-<span class="syntax-comment"># Test the function</span>
-<span class="syntax-variable">data</span> = [10, 20, 30, 40]
-<span class="syntax-function">print</span>(<span class="syntax-string">"Average:"</span>, <span class="syntax-function">calculate_average</span>(<span class="syntax-variable">data</span>)`);
+# Test the function
+data = [10, 20, 30, 40]
+print("Average:", calculate_average(data))`);
 
   const [translatedCode, setTranslatedCode] = useState(`function calculateAverage(numbers) {
   if (numbers.length === 0) {
@@ -103,10 +76,31 @@ console.log("Average:", calculateAverage(data));`);
   };
 
   const handleDebug = () => {
-    setNotification({
-      message: 'Analysis complete! Found 3 issues in your code.',
-      type: 'success'
-    });
+    axios.post('http://localhost:5000/debug', { code })
+      .then(res => {
+        setDebugResults([
+          {
+            id: 1,
+            type: 'output',
+            title: 'Execution Result',
+            line: '',
+            description: '',
+            fix: '',
+            explanation: res.data.output
+          }
+        ]);
+        setNotification({
+          message: 'Code analyzed successfully!',
+          type: 'success'
+        });
+      })
+      .catch(err => {
+        console.error("Error during debugging:", err);
+        setNotification({
+          message: 'Failed to debug the code.',
+          type: 'error'
+        });
+      });
   };
 
   const handleTranslate = () => {

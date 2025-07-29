@@ -19,14 +19,27 @@ const CodeEditorPanel = ({ code, onCodeChange, onDebug, onTranslate }) => {
             <div className="editor-dot dot-green"></div>
             <div className="editor-filename">example.py</div>
           </div>
-          <pre 
-            className="code-editor" 
-            contentEditable={true}
-            dangerouslySetInnerHTML={{ __html: code }}
-            onInput={(e) => onCodeChange(e.currentTarget.innerHTML)} 
+
+          {/* ✅ Replaced <pre> with a safe <textarea> */}
+          <textarea
+            className="code-editor-textarea"
+            value={code}
+            onChange={handleCodeChange}
+            rows={12}
+            style={{
+              width: '100%',
+              backgroundColor: '#1e1e1e',
+              color: '#d4d4d4',
+              fontFamily: 'monospace',
+              fontSize: '14px',
+              borderRadius: '8px',
+              padding: '12px',
+              border: '1px solid #444',
+              resize: 'vertical'
+            }}
           />
         </div>
-        
+
         <div className="editor-actions">
           <button className="action-btn debug-btn" onClick={onDebug}>
             <i className="fas fa-bug"></i> Debug & Explain
